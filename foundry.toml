@@ -18,7 +18,6 @@ remappings = [
   "@ds=lib/ds-test/src/",
   "@std=lib/forge-std/src/",
   "@solmate=lib/solmate/src/",
-  "@clones=lib/clones-with-immutable-args/src/",
 ]
 
 # Extreme Fuzzing CI Profile :P

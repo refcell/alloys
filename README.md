@@ -1,22 +1,13 @@
 <img align="right" width="150" height="150" top="100" src="./assets/readme.jpg">
 
-# femplate • [![tests](https://github.com/abigger87/femplate/actions/workflows/tests.yml/badge.svg)](https://github.com/abigger87/femplate/actions/workflows/tests.yml) [![lints](https://github.com/abigger87/femplate/actions/workflows/lints.yml/badge.svg)](https://github.com/abigger87/femplate/actions/workflows/lints.yml) ![GitHub](https://img.shields.io/github/license/abigger87/femplate)  ![GitHub package.json version](https://img.shields.io/github/package-json/v/abigger87/femplate)
+# alloys  • [![tests](https://github.com/abigger87/alloys/actions/workflows/tests.yml/badge.svg)](https://github.com/abigger87/alloys/actions/workflows/tests.yml) [![lints](https://github.com/abigger87/alloys/actions/workflows/lints.yml/badge.svg)](https://github.com/abigger87/alloys/actions/workflows/lints.yml) ![GitHub](https://img.shields.io/github/license/abigger87/alloys) ![GitHub package.json version](https://img.shields.io/github/package-json/v/abigger87/alloys)
 
 
-Robust Template for Foundry Projects.
+Modularized, Cross-Domain Fungible ERC721 Kinks.
 
-## Getting Started
+## Overview
 
-Click `use this template` on [Github](https://github.com/abigger87/femplate) to create a new repository with this repo as the initial state.
-
-Or, if your repo already exists, run:
-```sh
-forge init --template https://github.com/abigger87/femplate
-git submodule update --init --recursive
-forge install
-```
-
-Run `make rename` to rename all instances of `femplate` with the name of your project/repository.
+...
 
 ## Blueprint
 
@@ -27,13 +18,17 @@ lib
 ├─ solmate — https://github.com/Rari-Capital/solmate
 ├─ clones-with-immutable-args — https://github.com/wighawag/clones-with-immutable-args
 src
-├─ tests
-│  └─ Greeter.t — "Greeter Tests"
-└─ Greeter — "A Minimal Greeter Contract"
+├─ kinks — Kink Modules
+│  ├─ Ownable — A Kink that is streamed to Alloy Owners
+│  └─ Staked — A Kink that is distributed to Alloy Stakers
+├─ tests — Contract Tests
+│  └─ ...
+├─ Alloy — The ERC721 Alloy Contract
+├─ Kink — The ERC20 Trait for the ERC721 Alloy
+└─ Registry — Orchestrates Kink Modules
 ```
 
 ## Development
-
 
 **Setup**
 ```bash
@@ -107,7 +102,7 @@ Install DappTools using their [installation guide](https://github.com/dapphub/da
 
 ## License
 
-[AGPL-3.0-only](https://github.com/abigger87/femplate/blob/master/LICENSE)
+[AGPL-3.0-only](https://github.com/abigger87/alloys/blob/master/LICENSE)
 
 ## Acknowledgements
 
