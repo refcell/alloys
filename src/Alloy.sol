@@ -68,20 +68,19 @@ contract Alloy is ERC721 {
   /// :::::::::::::::::::::::::  MELD  ::::::::::::::::::::::::: ///
 
   /// @notice Allows alloy keeps (token holders) to register new fungible traits (kinks).
-  function meld(address kink) public onlyKeep {
-    // Register the kink
+  function meld(address kink) external onlyKeep {
     CLERK.meld(kink);
   }
 
   /// @notice Checks if a kink has been melded.
-  function melded(address kink) public view returns (bool) {
+  function melded(address kink) external view returns (bool) {
     return CLERK.melded(kink);
   }
 
   /// ::::::::::::::::::::::::::  REAP  ::::::::::::::::::::::: ///
 
   /// @notice Reaps Kinks
-  function reap() external {
+  function reap() external onlyKeep {
     CLERK.reap(msg.sender);
   }
 

@@ -7,4 +7,6 @@ import {IERC20} from "./IERC20.sol";
 /// @author andreas@nascent.xyz
 interface IEvolve is IERC20 {
     function mint(address to, uint256 value) external;
+    function setMintable(address minter, uint256 amount) external;
+    function warden() external view returns (address);
 }
