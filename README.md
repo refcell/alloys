@@ -7,7 +7,17 @@ Modularized, Cross-Domain Fungible ERC721 Kinks.
 
 ## Overview
 
-...
+Alloys at its core is an ERC721 where traits ("kinks") are fungible. The core [Alloy](./src/Alloy.sol) contract is an ERC721 that renders metadata with kinks tracked by the Registry. The [Registry](./src/Registry.sol) orchestrates [Kink](./src/Kink.sol) contracts (implementations in [src/kinks](./src/kinks/)), which are themselves ERC20 tokens.
+
+Kinks are distributed to Alloy holders through a distribution mechanism.
+
+## Glossary
+
+We use Primitive and Maker's approach of Unconvential Naming inspired by [The Dangers of Surprising Code](https://samczsun.com/the-dangers-of-surprising-code/) h/t [Alex](https://twitter.com/alexangelj) [Mistrusting Variable Names](https://twitter.com/alexangelj/status/1491280313162813441?s=20&t=NoFpNkO9orH8OZ34-DIfMQ).
+
+
+`
+
 
 ## Blueprint
 
