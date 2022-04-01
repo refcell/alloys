@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity 0.8.13;
 
-import {Base64} from "./lib/Base64.sol";
-import {Registry} from "./Registry.sol";
+import {Base64} from "./utils/Base64.sol";
+import {Clerk} from "./Clerk.sol";
 import {IEvolve} from "./interfaces/IEvolve.sol";
 
 import {ERC20} from "@solmate/tokens/ERC20.sol";
@@ -23,19 +23,22 @@ contract Alloy is ERC721 {
   /// @notice There are no more coins left.
   error NoMoreCoins();
 
-  /// @notice The msg.sender is not an alloy keeper.
-  error NotKeeper();
+  /// @notice The msg.sender is not an alloy keep.
+  error NotKeep();
 
-  /// :::::::::::::::::::::  IMMUTABLES  :::::::::::::::::::::: ///
+  /// :::::::::::::::::::::::::  IMUT  ::::::::::::::::::::::::: ///
 
   /// @notice The maximum number of coins.
   uint256 immutable public MAXIMUM_TOKENS;
 
-  /// @notice The Registry Contract
-  Registry immutable public REGISTRY;
+  /// @notice The Clerk Contract
+  Clerk immutable public CLERK;
 
   /// @notice The Evolve Reward Token
-  IEvolve constant public EVOLVE = IEvolve(0x14813e8905a0f782f796a5273d2efbe6551100d6);
+  IEvolve constant public EVOLVE = IEvolve(0x14813e8905a0f782F796A5273d2EFbe6551100D6);
+
+  /// @notice The amount of Evolve to mint for keeps.
+  uint256 immutable public KEEP_REWARD;
 
   /// :::::::::::::::::::::::  STORAGE  ::::::::::::::::::::::: ///
 
@@ -49,7 +52,8 @@ contract Alloy is ERC721 {
 
   constructor() ERC721("Alloy", "ALOY") {
     MAXIMUM_TOKENS = 100;
-    REGISTRY = new Registry();
+    KEEP_REWARD = 100;
+    CLERK = new Clerk();
   }
 
   /// :::::::::::::::::::::::::  CAST  ::::::::::::::::::::::::: ///
@@ -58,21 +62,27 @@ contract Alloy is ERC721 {
     casted[msg.sender] = true;
     nextId++;
     _mint(_to, nextId);
+    EVOLVE.mint(msg.sender, KEEP_REWARD);
   }
 
   /// :::::::::::::::::::::::::  MELD  ::::::::::::::::::::::::: ///
 
-  /// @notice Allows alloy keepers (token holders) to register new fungible traits (kinks).
-  function meld(Kink kink) public onlyKeeper {
+  /// @notice Allows alloy keeps (token holders) to register new fungible traits (kinks).
+  function meld(address kink) public onlyKeep {
     // Register the kink
-    REGISTRY.meld(kink);
+    CLERK.meld(kink);
+  }
+
+  /// @notice Checks if a kink has been melded.
+  function melded(address kink) public view returns (bool) {
+    return CLERK.melded(kink);
   }
 
   /// ::::::::::::::::::::::::::  REAP  ::::::::::::::::::::::: ///
 
   /// @notice Reaps Kinks
   function reap() external {
-    REGISTRY.reap(msg.sender);
+    CLERK.reap(msg.sender);
   }
 
   /// :::::::::::::::::::::::  MODIFIERS  ::::::::::::::::::::: ///
@@ -87,8 +97,8 @@ contract Alloy is ERC721 {
     _;
   }
 
-  modifier onlyKeeper() {
-    if (balanceOf[msg.sender] == 0) revert NotKeeper();
+  modifier onlyKeep() {
+    if (balanceOf[msg.sender] == 0) revert NotKeep();
     _;
   }
 
@@ -123,7 +133,7 @@ contract Alloy is ERC721 {
       "<use href='#s-text' class='text-copy'></use></g>";
 
     // Convert token id to string
-    string memory sTokenId = toString(tokenId);
+    string memory sTokenId = toString(id);
 
     // Create the SVG Image
     string memory finalSvg = string(
