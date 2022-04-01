@@ -45,7 +45,7 @@ abstract contract Kink is ERC20 {
   address public clerk;
 
   /// @notice The Contract Deployer.
-  address public PREX;
+  address public prex;
 
   /// :::::::::::::::::::::::::  REAP  :::::::::::::::::::::::: ///
 
@@ -83,7 +83,7 @@ abstract contract Kink is ERC20 {
   /// :::::::::::::::::::::::::  MODS  :::::::::::::::::::::::: ///
 
   modifier onlyPrex() {
-    if (msg.sender != PREX) revert ExecutiveOrder66();
+    if (msg.sender != prex) revert ExecutiveOrder66();
     _;
   }
 

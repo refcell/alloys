@@ -27,8 +27,8 @@ contract Ownable is Kink {
 
   /// :::::::::::::::::::::::  SEND  ::::::::::::::::::::::: ///
 
-  constructor() ERC20("Kink", "KINK", 18) public {
-    PREX = msg.sender;
+  constructor() ERC20("Kink", "KINK", 18) {
+    prex = msg.sender;
     EMISSION_RATE = 100 * BASE_UNIT;
     EMISSION_QUANTUM = 1 days;
   }
@@ -50,5 +50,7 @@ contract Ownable is Kink {
     // Calculate amount of emissions to reap.
     uint256 acc = lots * EMISSION_RATE;
     _mint(who, acc);
+
+    return acc;
   }
 }

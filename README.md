@@ -13,14 +13,48 @@ Kinks are distributed to Alloy holders through a distribution mechanism.
 
 ## Glossary
 
-We use Primitive and Maker's approach of Unconvential Naming inspired by [The Dangers of Surprising Code](https://samczsun.com/the-dangers-of-surprising-code/) h/t [Alex](https://twitter.com/alexangelj) [Mistrusting Variable Names](https://twitter.com/alexangelj/status/1491280313162813441?s=20&t=NoFpNkO9orH8OZ34-DIfMQ).
+`Alloys` uses Primitive and Maker's approach of Unconvential Naming inspired by [The Dangers of Surprising Code](https://samczsun.com/the-dangers-of-surprising-code/) h/t [Alex](https://twitter.com/alexangelj) [Mistrusting Variable Names](https://twitter.com/alexangelj/status/1491280313162813441?s=20&t=NoFpNkO9orH8OZ34-DIfMQ).
+
+#### Alloy
+
+[`src/Alloy.sol`](./src/Alloy.sol): Alloy is an ERC721 Token that has one `Clerk` and many `Kinks`.
+
+`cast`: _Mints_ ERC721 tokens.
+
+`keep`: An Alloy _Holder_.
+
+`reap`: _Distributes_ kink tokens to a `keep`.
+
+`meld`: _Registers_ a new Kink for the Alloy.
 
 
-`keep`: [_Holder_] An Alloy holder. [src/Alloy.sol](./src/Alloy.sol)
-`reap`: [_Distribute_] Distributes kink tokens to a `keep`. [src/Alloy.sol](./src/Alloy.sol)
-`kink`: [_Trait_] An ERC20 token that is a trait of an alloy. [src/Kink.sol](./src/Kink.sol)
-`prex`: [_President_] The contract deployer. [src/kinks/*](./src/kinks/)
-`kick`: [_Initiate_] Initiates a kink's token distribution. [src/Kink.sol](./src/Kink.sol)
+#### Clerk
+
+[`src/Clerk.sol`](./src/Clerk.sol): Clerk is a registry deployed by the Alloy that manages the Kinks.
+
+`meld`: _Registers_ a new Kink for the Alloy, recording it in the Clerk.
+
+`reap`: _Distributes_ all kink tokens to a `keep`.
+
+`mass`: Returns all melded kinks.
+
+
+#### Kink
+
+[`src/Kink.sol`](./src/Kink.sol): Kink is an ERC20 that represents a trait of an Alloy.
+
+`seed`: The reaping start time.
+
+`fell`: The reaping end time.
+
+`prex`: The contract deployer.
+
+`kick`: _Initiates_ a kink's token distribution (sets `seed` equal to the current block timestamp).
+
+`roll`: Sets the Alloy address.
+
+`link`: Sets the Clerk address.
+
 
 ## Blueprint
 

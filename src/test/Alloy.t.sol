@@ -12,6 +12,13 @@ contract AlloyTest is DSTestPlus {
         alloy = new Alloy();
     }
 
+    function testMetadata() public {
+        assertEq(alloy.name(), "Alloy");
+        assertEq(alloy.symbol(), "ALLOY");
+        assertEq(alloy.MAXIMUM_TOKENS(), 100);
+        assertEq(alloy.KEEP_REWARD(), 100);
+    }
+
     function testCast() public {
         // ....
         console.log(unicode"✅ cast tests passed!");
