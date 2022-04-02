@@ -26,7 +26,7 @@ contract Clerk {
   uint256 public kinkc;
 
   /// @notice Tracks Alloy Kinks
-  mapping(uint256 => address) kinks;
+  mapping(uint256 => address) public kinks;
 
   /// :::::::::::::::::::::  CONSTRUCTOR  ::::::::::::::::::::: ///
 

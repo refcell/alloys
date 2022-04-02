@@ -12,18 +12,18 @@ contract Ownable is Kink {
   /// :::::::::::::::::::::::  STOR  ::::::::::::::::::::::: ///
 
   /// @notice Last reaping for a given address.
-  mapping(address => uint256) base;
+  mapping(address => uint256) public base;
 
   /// :::::::::::::::::::::::  IMUT  ::::::::::::::::::::::: ///
 
   /// @notice The emission rate per unit time quantum in BASE_UNITS.
-  uint256 immutable internal EMISSION_RATE;
+  uint256 immutable public EMISSION_RATE;
 
   /// @notice Emission time quantum.
-  uint256 immutable internal EMISSION_QUANTUM;
+  uint256 immutable public EMISSION_QUANTUM;
 
   /// @notice The base unit for ff precision.
-  uint256 constant internal BASE_UNIT = 1e18;
+  uint256 constant public BASE_UNIT = 1e18;
 
   /// :::::::::::::::::::::::  SEND  ::::::::::::::::::::::: ///
 

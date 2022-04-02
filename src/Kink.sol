@@ -30,6 +30,9 @@ abstract contract Kink is ERC20 {
   /// @notice Thrown if the caller isn't the clerk.
   error NotClerk();
 
+  /// @notice Thrown if the clerk is already set
+  error ClerkSet();
+
   /// :::::::::::::::::::::::  STOR  ::::::::::::::::::::::: ///
 
   /// @notice The reaping start time.
@@ -74,7 +77,7 @@ abstract contract Kink is ERC20 {
   /// :::::::::::::::::::::::::  LINK  :::::::::::::::::::::::: ///
 
   /// @notice Links the Kink to the Clerk.
-  function link() external {
+  function link() external unsetClerk {
     if (IClerk(msg.sender).melded(address(this))) {
       clerk = msg.sender;
     }
@@ -103,6 +106,11 @@ abstract contract Kink is ERC20 {
 
   modifier onlyClerk() {
     if (msg.sender != clerk) revert NotClerk();
+    _;
+  }
+
+  modifier unsetClerk() {
+    if (clerk != address(0)) revert ClerkSet();
     _;
   }
 }

@@ -10,7 +10,7 @@ import {DSTestPlus} from "./utils/DSTestPlus.sol";
 
 import {Evolve} from "@evolve/Evolve.sol";
 
-contract AlloyTest is DSTestPlus {
+contract ClerkTest is DSTestPlus {
     Alloy alloy;
     Clerk clerk;
     IEvolve evolve;
@@ -18,7 +18,7 @@ contract AlloyTest is DSTestPlus {
     address constant public EVOLVE_WARDEN = 0xc9AB63915c6738c8Ce5ca245979203Bfa3F2499F;
 
     function setUp() public {
-        console.log(unicode"🧪 Testing Alloy...");
+        console.log(unicode"🧪 Testing Clerk...");
         alloy = new Alloy();
         clerk = alloy.CLERK();
         evolve = alloy.EVOLVE();
@@ -39,65 +39,40 @@ contract AlloyTest is DSTestPlus {
     }
 
     function testMetadata() public {
-        assertEq(alloy.name(), "Alloy");
-        assertEq(alloy.symbol(), "ALOY");
-        assertEq(alloy.MAXIMUM_TOKENS(), 100);
-        assertEq(alloy.KEEP_REWARD(), 100);
+        assertEq(address(clerk.alloy()), address(alloy));
+        assertEq(clerk.kinkc(), 0);
     }
 
-    function testCast() public {
-        startHoax(address(1337), address(1337), type(uint256).max);
-        alloy.cast(address(1337));
-        vm.stopPrank();
-        assertEq(alloy.balanceOf(address(1337)), 1);
-        assertEq(evolve.balanceOf(address(1337)), 100);
-        assertEq(alloy.nextId(), 1);
-
-        // The same address can't mint twice
-        startHoax(address(1337), address(1337), type(uint256).max);
-        vm.expectRevert(abi.encodeWithSignature("DuplicateCast()"));
-        alloy.cast(address(1337));
-        vm.stopPrank();
-        assertEq(alloy.balanceOf(address(1337)), 1);
-        assertEq(evolve.balanceOf(address(1337)), 100);
-        assertEq(alloy.nextId(), 1);
-
-        // Cast works!
-        console.log(unicode"✅ cast tests passed!");
-    }
-
-    function testMeld() public {
+    function testMeld(address rando) public {
         // First, deploy a new Ownable kink
         Ownable ownable = new Ownable();
 
-        // User can't meld without being a keep
-        startHoax(address(1337), address(1337), type(uint256).max);
-        vm.expectRevert(abi.encodeWithSignature("NotKeep()"));
-        alloy.meld(address(ownable));
+        // Melding directly on the clerk should fail - it has to be alloy
+        if (rando == address(alloy)) {
+            rando = address(1337);
+        }
+        startHoax(rando, rando, type(uint256).max);
+        vm.expectRevert(abi.encodeWithSignature("NonAlloy()"));
+        clerk.meld(address(ownable));
         vm.stopPrank();
 
-        // Let's mint the user an alloy
+        // The user can now meld
+        assertEq(clerk.mass().length, 0);
+        assertTrue(!clerk.melded(address(ownable)));
         startHoax(address(1337), address(1337), type(uint256).max);
         alloy.cast(address(1337));
-        vm.stopPrank();
-        assertEq(alloy.balanceOf(address(1337)), 1);
-        assertEq(evolve.balanceOf(address(1337)), 100);
-        assertEq(alloy.nextId(), 1);
-
-        // The kink shouldn't be melded
-        assertTrue(!alloy.melded(address(ownable)));
-
-        // The user can now meld the kink
-        startHoax(address(1337), address(1337), type(uint256).max);
         alloy.meld(address(ownable));
         vm.stopPrank();
-        assertTrue(alloy.melded(address(ownable)));
+        assertTrue(clerk.melded(address(ownable)));
+        assertEq(clerk.kinkc(), 1);
+        assertEq(clerk.kinks(0), address(ownable));
+        assertEq(clerk.mass()[0], address(ownable));
 
         // Cast works!
         console.log(unicode"✅ meld tests passed!");
     }
 
-    function testReap() public {
+    function testReap(address rando) public {
         // Meld an ownable kink
         Ownable ownable = new Ownable();
         startHoax(address(1337), address(1337), type(uint256).max);
@@ -113,6 +88,15 @@ contract AlloyTest is DSTestPlus {
 
         // Jump to middle of the reaping period
         vm.warp(5 days);
+
+        // Only Alloy can directly reap the clerk
+        if (rando == address(alloy)) {
+            rando = address(1337);
+        }
+        startHoax(rando, rando, type(uint256).max);
+        vm.expectRevert(abi.encodeWithSignature("NonAlloy()"));
+        clerk.reap(address(ownable));
+        vm.stopPrank();
 
         // Reap the kink
         assertEq(ownable.balanceOf(address(1337)), 0);
