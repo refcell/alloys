@@ -27,6 +27,12 @@ Kinks are distributed to Alloy holders through a distribution mechanism.
 
 `meld`: _Registers_ a new Kink for the Alloy.
 
+`suit`: _Renders_ a kink's uri in the Alloy Token URI.
+
+`ploy`: Grabs all melded kinks via the Clerk
+
+`bren`: Stakes an alloy token in a specified kink.
+
 
 #### Clerk
 
@@ -37,6 +43,8 @@ Kinks are distributed to Alloy holders through a distribution mechanism.
 `reap`: _Distributes_ all kink tokens to a `keep`.
 
 `mass`: Returns all melded kinks.
+
+`pile`: _Renders_ all kink uris for a given alloy token id.
 
 
 #### Kink
@@ -55,6 +63,7 @@ Kinks are distributed to Alloy holders through a distribution mechanism.
 
 `link`: Sets the Clerk address.
 
+`rend`: _Returns_ the kink token uri.
 
 ## Blueprint
 

@@ -65,11 +65,61 @@ contract ClerkTest is DSTestPlus {
         vm.stopPrank();
         assertTrue(clerk.melded(address(ownable)));
         assertEq(clerk.kinkc(), 1);
-        assertEq(clerk.kinks(0), address(ownable));
+        assertEq(clerk.kinks(1), address(ownable));
         assertEq(clerk.mass()[0], address(ownable));
 
         // Cast works!
         console.log(unicode"✅ meld tests passed!");
+    }
+
+    function testSuit(address rando) public {
+        // First, deploy a new Ownable kink
+        Ownable ownable = new Ownable();
+
+        // Suiting directly on the clerk should fail - it has to be alloy
+        if (rando == address(alloy)) {
+            rando = address(1337);
+        }
+        startHoax(rando, rando, type(uint256).max);
+        vm.expectRevert(abi.encodeWithSignature("NonAlloy()"));
+        clerk.suit(address(ownable), 1, true);
+        vm.stopPrank();
+
+        // The user can now suit
+        assertEq(clerk.mass().length, 0);
+        assertTrue(!clerk.melded(address(ownable)));
+        startHoax(address(1337), address(1337), type(uint256).max);
+        alloy.cast(address(1337));
+        alloy.meld(address(ownable));
+        alloy.suit(address(ownable), 1, true);
+        vm.stopPrank();
+        assertTrue(clerk.suited(1, 1));
+
+        // Cast works!
+        console.log(unicode"✅ suit tests passed!");
+    }
+
+    function testPile(address rando) public {
+        // First, deploy a new Ownable kink
+        Ownable ownable = new Ownable();
+
+        // Initial piling should return empty renderings
+        (string memory styles, string memory html) = clerk.pile(1);
+        assertEq(bytes(styles).length, 0);
+        assertEq(bytes(html).length, 0);
+
+        // After suiting, pile should return that kinks uri
+        startHoax(address(1337), address(1337), type(uint256).max);
+        alloy.cast(address(1337));
+        alloy.meld(address(ownable));
+        alloy.suit(address(ownable), 1, true);
+        vm.stopPrank();
+        (string memory styles2, string memory html2) = clerk.pile(1);
+        assertTrue(bytes(styles2).length > 0);
+        assertTrue(bytes(html2).length > 0);
+
+        // Cast works!
+        console.log(unicode"✅ pile tests passed!");
     }
 
     function testReap(address rando) public {

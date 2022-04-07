@@ -138,4 +138,11 @@ contract KinkTest is DSTestPlus {
         // Cast works!
         console.log(unicode"✅ reap tests passed!");
     }
+
+    function testRend() public {
+        (string memory styles, string memory html) = kink.rend();
+        assertTrue(bytes(styles).length > 0);
+        assertTrue(bytes(html).length > 0);
+        console.log(unicode"✅ reap tests passed!");
+    }
 }

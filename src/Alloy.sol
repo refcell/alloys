@@ -51,18 +51,35 @@ contract Alloy is ERC721 {
   /// :::::::::::::::::::::  CONSTRUCTOR  ::::::::::::::::::::: ///
 
   constructor() ERC721("Alloy", "ALOY") {
-    MAXIMUM_TOKENS = 100;
-    KEEP_REWARD = 100;
+    MAXIMUM_TOKENS = 1_000;
+    KEEP_REWARD = 10_000;
     CLERK = new Clerk();
   }
 
   /// :::::::::::::::::::::::::  CAST  ::::::::::::::::::::::::: ///
 
+  /// @notice Mints a new Alloy ERC721
+  /// @param _to The address to mint the Alloy ERC721 token to
   function cast(address _to) public uniqueAddress moreCoin {
     casted[msg.sender] = true;
-    nextId++;
-    _mint(_to, nextId);
+    uint256 nId = nextId + 1; // sload
+    _mint(_to, nId);
+    nextId = nId; // sstore
     EVOLVE.mint(msg.sender, KEEP_REWARD);
+  }
+
+  /// :::::::::::::::::::::::::  BREN  ::::::::::::::::::::::::: ///
+
+  /// @notice Stakes the token in a given kink
+  function bren(uint256 id, address kink) public onlyKeeper(id) {
+    CLERK.bren(id, kink);
+  }
+
+  /// :::::::::::::::::::::::::  PLOY  ::::::::::::::::::::::::: ///
+
+  /// @notice Returns all melded kinks via the Clerk
+  function ploy() external view returns (address[] memory) {
+    return CLERK.mass();
   }
 
   /// :::::::::::::::::::::::::  MELD  ::::::::::::::::::::::::: ///
@@ -84,6 +101,18 @@ contract Alloy is ERC721 {
     CLERK.reap(msg.sender);
   }
 
+  /// ::::::::::::::::::::::::::  SUIT  ::::::::::::::::::::::: ///
+
+  /// @notice Equips a kink onto a keep's alloy.
+  function suit(address kink, uint256 id, bool suited) external onlyKeeper(id) {
+    CLERK.suit(kink, id, suited);
+  }
+
+  /// @notice Returns if a kink is suited
+  function suited(address kink, uint256 id) external view returns(bool) {
+    return CLERK.suited(id, CLERK.kinkcs(kink));
+  }
+
   /// :::::::::::::::::::::::  MODIFIERS  ::::::::::::::::::::: ///
 
   modifier uniqueAddress() {
@@ -101,43 +130,27 @@ contract Alloy is ERC721 {
     _;
   }
 
+  modifier onlyKeeper(uint256 id) {
+    if (msg.sender != ownerOf[id]) revert NotKeep();
+    _;
+  }
+
   /// :::::::::::::::::::::::  METADATA  :::::::::::::::::::::: ///
 
   function tokenURI(uint256 id) public view override virtual returns (string memory) {
-    string memory baseSvg =
-      "<svg viewBox='0 0 800 800' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>"
-      "<style>.text--line{font-size:400px;font-weight:bold;font-family:'Arial';}"
-      ".top-text{fill:#bafe49;font-weight: bold;font-color:#bafe49;font-size:40px;font-family:'Arial';}"
-      ".text-copy{fill:none;stroke:white;stroke-dasharray:25% 40%;stroke-width:4px;animation:stroke-offset 9s infinite linear;}"
-      ".text-copy:nth-child(1){stroke:#bafe49;stroke-dashoffset:6% * 1;}.text-copy:nth-child(2){stroke:#bafe49;stroke-dashoffset:6% * 2;}"
-      ".text-copy:nth-child(3){stroke:#bafe49;stroke-dashoffset:6% * 3;}.text-copy:nth-child(4){stroke:#bafe49;stroke-dashoffset:6% * 4;}"
-      ".text-copy:nth-child(5){stroke:#bafe49;stroke-dashoffset:6% * 5;}.text-copy:nth-child(6){stroke:#bafe49;stroke-dashoffset:6% * 6;}"
-      ".text-copy:nth-child(7){stroke:#bafe49;stroke-dashoffset:6% * 7;}.text-copy:nth-child(8){stroke:#bafe49;stroke-dashoffset:6% * 8;}"
-      ".text-copy:nth-child(9){stroke:#bafe49;stroke-dashoffset:6% * 9;}.text-copy:nth-child(10){stroke:#bafe49;stroke-dashoffset:6% * 10;}"
-      "@keyframes stroke-offset{45%{stroke-dashoffset:40%;stroke-dasharray:25% 0%;}60%{stroke-dashoffset:40%;stroke-dasharray:25% 0%;}}"
-      "</style>"
-      "<rect width='100%' height='100%' fill='black' />"
-      "<symbol id='s-text'>"
-      "<text text-anchor='middle' x='50%' y='70%' class='text--line'>Y</text>"
-      "</symbol><g class='g-ants'>"
-      "<use href='#s-text' class='text-copy'></use>"
-      "<use href='#s-text' class='text-copy'></use>"
-      "<use href='#s-text' class='text-copy'></use>"
-      "<use href='#s-text' class='text-copy'></use>"
-      "<use href='#s-text' class='text-copy'></use>"
-      "<use href='#s-text' class='text-copy'></use>"
-      "<use href='#s-text' class='text-copy'></use>"
-      "<use href='#s-text' class='text-copy'></use>"
-      "<use href='#s-text' class='text-copy'></use>"
-      "<use href='#s-text' class='text-copy'></use></g>";
+
+    // Fetch the equiped kinks for a given token id
+    (string memory styles, string memory html) = CLERK.pile(id);
 
     // Convert token id to string
     string memory sTokenId = toString(id);
 
     // Create the SVG Image
-    string memory finalSvg = string(
+    string memory rendered = string(
       abi.encodePacked(
-        baseSvg,
+        "<svg viewBox='0 0 800 800' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'><style>",
+        styles,
+        html,
         "<text class='top-text' margin='2px' x='4%' y='8%'>",
         sTokenId,
         "</text></svg>"
@@ -149,13 +162,13 @@ contract Alloy is ERC721 {
       bytes(
         string(
           abi.encodePacked(
-            '{"name": "Pioneer ',
+            '{"name": "', name, ' ',
             sTokenId,
             '", "description": "',
-            'Number ',
+            name, ' Number ',
             sTokenId,
-            ' of the Pioneer collection for early Yobot Adopters", "image": "data:image/svg+xml;base64,',
-            Base64.encode(bytes(finalSvg)),
+            ' of the ', name, ' collection for shadowy production testers.", "image": "data:image/svg+xml;base64,',
+            Base64.encode(bytes(rendered)),
             '"}'
           )
         )

@@ -53,4 +53,34 @@ contract Ownable is Kink {
 
     return acc;
   }
+
+  /// :::::::::::::::::::::::::  REND  :::::::::::::::::::::::: ///
+
+  /// @notice Renders a Kink's styles and html on an alloy.
+  function rend() external override view returns (string memory style, string memory html) {
+    style = ".text--line{font-size:400px;font-weight:bold;font-family:'Arial';}"
+      ".top-text{fill:#50A682;font-weight: bold;font-color:#50A682;font-size:40px;font-family:'Arial';}"
+      ".text-copy{fill:none;stroke:white;stroke-dasharray:25% 40%;stroke-width:4px;animation:stroke-offset 9s infinite linear;}"
+      ".text-copy:nth-child(1){stroke:#50A682;stroke-dashoffset:6% * 1;}.text-copy:nth-child(2){stroke:#50A682;stroke-dashoffset:6% * 2;}"
+      ".text-copy:nth-child(3){stroke:#50A682;stroke-dashoffset:6% * 3;}.text-copy:nth-child(4){stroke:#50A682;stroke-dashoffset:6% * 4;}"
+      ".text-copy:nth-child(5){stroke:#50A682;stroke-dashoffset:6% * 5;}.text-copy:nth-child(6){stroke:#50A682;stroke-dashoffset:6% * 6;}"
+      ".text-copy:nth-child(7){stroke:#50A682;stroke-dashoffset:6% * 7;}.text-copy:nth-child(8){stroke:#50A682;stroke-dashoffset:6% * 8;}"
+      ".text-copy:nth-child(9){stroke:#50A682;stroke-dashoffset:6% * 9;}.text-copy:nth-child(10){stroke:#50A682;stroke-dashoffset:6% * 10;}"
+      "@keyframes stroke-offset{45%{stroke-dashoffset:40%;stroke-dasharray:25% 0%;}60%{stroke-dashoffset:40%;stroke-dasharray:25% 0%;}}";
+
+    html = "<rect width='100%' height='100%' fill='black' />"
+      "<symbol id='s-text'>"
+      "<text text-anchor='middle' x='50%' y='70%' class='text--line'>A</text>"
+      "</symbol><g class='g-ants'>"
+      "<use href='#s-text' class='text-copy'></use>"
+      "<use href='#s-text' class='text-copy'></use>"
+      "<use href='#s-text' class='text-copy'></use>"
+      "<use href='#s-text' class='text-copy'></use>"
+      "<use href='#s-text' class='text-copy'></use>"
+      "<use href='#s-text' class='text-copy'></use>"
+      "<use href='#s-text' class='text-copy'></use>"
+      "<use href='#s-text' class='text-copy'></use>"
+      "<use href='#s-text' class='text-copy'></use>"
+      "<use href='#s-text' class='text-copy'></use></g>";
+  }
 }

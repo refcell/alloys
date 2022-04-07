@@ -34,7 +34,7 @@ contract AlloyTest is DSTestPlus {
 
         // Hoax evolve to allow user to mint
         startHoax(EVOLVE_WARDEN, EVOLVE_WARDEN, type(uint256).max);
-        evolve.setMintable(address(alloy), 1000);
+        evolve.setMintable(address(alloy), 1_000_000);
         vm.stopPrank();
     }
 
@@ -42,7 +42,7 @@ contract AlloyTest is DSTestPlus {
         assertEq(alloy.name(), "Alloy");
         assertEq(alloy.symbol(), "ALOY");
         assertEq(alloy.MAXIMUM_TOKENS(), 100);
-        assertEq(alloy.KEEP_REWARD(), 100);
+        assertEq(alloy.KEEP_REWARD(), 10_000);
     }
 
     function testCast() public {
@@ -50,7 +50,7 @@ contract AlloyTest is DSTestPlus {
         alloy.cast(address(1337));
         vm.stopPrank();
         assertEq(alloy.balanceOf(address(1337)), 1);
-        assertEq(evolve.balanceOf(address(1337)), 100);
+        assertEq(evolve.balanceOf(address(1337)), 10_000);
         assertEq(alloy.nextId(), 1);
 
         // The same address can't mint twice
@@ -59,7 +59,7 @@ contract AlloyTest is DSTestPlus {
         alloy.cast(address(1337));
         vm.stopPrank();
         assertEq(alloy.balanceOf(address(1337)), 1);
-        assertEq(evolve.balanceOf(address(1337)), 100);
+        assertEq(evolve.balanceOf(address(1337)), 10_000);
         assertEq(alloy.nextId(), 1);
 
         // Cast works!
@@ -81,7 +81,7 @@ contract AlloyTest is DSTestPlus {
         alloy.cast(address(1337));
         vm.stopPrank();
         assertEq(alloy.balanceOf(address(1337)), 1);
-        assertEq(evolve.balanceOf(address(1337)), 100);
+        assertEq(evolve.balanceOf(address(1337)), 10_000);
         assertEq(alloy.nextId(), 1);
 
         // The kink shouldn't be melded
@@ -95,6 +95,44 @@ contract AlloyTest is DSTestPlus {
 
         // Cast works!
         console.log(unicode"✅ meld tests passed!");
+    }
+
+    function testSuit(address rando) public {
+        // First, deploy a new Ownable kink
+        Ownable ownable = new Ownable();
+
+        // User can't suit without being a keep
+        if (rando == address(alloy) || rando == address(0)) {
+            rando = address(1337);
+        }
+        startHoax(rando, rando, type(uint256).max);
+        vm.expectRevert(abi.encodeWithSignature("NotKeep()"));
+        alloy.suit(address(ownable), 1, true);
+        vm.stopPrank();
+
+        // Let's mint the user an alloy
+        startHoax(address(1337), address(1337), type(uint256).max);
+        alloy.cast(address(1337));
+        vm.stopPrank();
+        assertEq(alloy.balanceOf(address(1337)), 1);
+        assertEq(evolve.balanceOf(address(1337)), 10_000);
+        assertEq(alloy.nextId(), 1);
+
+        // User can't suit a different token id than they own
+        startHoax(rando, rando, type(uint256).max);
+        vm.expectRevert(abi.encodeWithSignature("NotKeep()"));
+        alloy.suit(address(ownable), 2, true);
+        vm.stopPrank();
+
+        // The user can now suit
+        startHoax(address(1337), address(1337), type(uint256).max);
+        alloy.meld(address(ownable));
+        alloy.suit(address(ownable), 1, true);
+        vm.stopPrank();
+        assertTrue(alloy.suited(address(ownable), 1));
+
+        // Cast works!
+        console.log(unicode"✅ suit tests passed!");
     }
 
     function testReap() public {
