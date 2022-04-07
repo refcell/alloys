@@ -60,6 +60,11 @@ abstract contract Kink is ERC20 {
   /// @notice Renders a Kink's styles and html on an alloy.
   function rend() external virtual view returns (string memory style, string memory html);
 
+  /// :::::::::::::::::::::::::  BREN  :::::::::::::::::::::::: ///
+
+  /// @notice Stakes an alloy token in the kink
+  function bren(address who) external virtual onlyClerk {}
+
   /// :::::::::::::::::::::::::  KICK  :::::::::::::::::::::::: ///
 
   /// @notice Initiates the kink distributions.

@@ -57,7 +57,7 @@ contract Ownable is Kink {
   /// :::::::::::::::::::::::::  REND  :::::::::::::::::::::::: ///
 
   /// @notice Renders a Kink's styles and html on an alloy.
-  function rend() external override view returns (string memory style, string memory html) {
+  function rend() external override pure returns (string memory style, string memory html) {
     style = ".text--line{font-size:400px;font-weight:bold;font-family:'Arial';}"
       ".top-text{fill:#50A682;font-weight: bold;font-color:#50A682;font-size:40px;font-family:'Arial';}"
       ".text-copy{fill:none;stroke:white;stroke-dasharray:25% 40%;stroke-width:4px;animation:stroke-offset 9s infinite linear;}"

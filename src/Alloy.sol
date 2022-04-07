@@ -71,15 +71,15 @@ contract Alloy is ERC721 {
   /// :::::::::::::::::::::::::  BREN  ::::::::::::::::::::::::: ///
 
   /// @notice Stakes the token in a given kink
-  function bren(uint256 id, address kink) public onlyKeeper(id) {
-    CLERK.bren(id, kink);
+  function bren(uint256 id, address kink) external onlyKeeper(id) {
+    CLERK.bren(id, kink, msg.sender);
   }
 
   /// :::::::::::::::::::::::::  PLOY  ::::::::::::::::::::::::: ///
 
-  /// @notice Returns all melded kinks via the Clerk
-  function ploy() external view returns (address[] memory) {
-    return CLERK.mass();
+  /// @notice Revokes a kink bren
+  function ploy(uint256 id) external onlyKeeper(id) {
+    return CLERK.ploy(id);
   }
 
   /// :::::::::::::::::::::::::  MELD  ::::::::::::::::::::::::: ///
@@ -104,8 +104,8 @@ contract Alloy is ERC721 {
   /// ::::::::::::::::::::::::::  SUIT  ::::::::::::::::::::::: ///
 
   /// @notice Equips a kink onto a keep's alloy.
-  function suit(address kink, uint256 id, bool suited) external onlyKeeper(id) {
-    CLERK.suit(kink, id, suited);
+  function suit(address kink, uint256 id, bool equipped) external onlyKeeper(id) {
+    CLERK.suit(kink, id, equipped);
   }
 
   /// @notice Returns if a kink is suited

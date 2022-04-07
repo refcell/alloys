@@ -17,6 +17,12 @@ contract Clerk {
   /// @notice Thrown if the caller isn't the alloy.
   error NonAlloy();
 
+  /// @notice Thrown if the kink is bren
+  error AlreadyBren();
+  
+  /// @notice Thrown if the kink is not bren
+  error NotBren();
+
   /// :::::::::::::::::::::::  STORAGE  ::::::::::::::::::::::: ///
 
   /// @notice The Alloy that deployed the Clerk
@@ -35,8 +41,8 @@ contract Clerk {
   /// @dev token_id => kink_number => is_equipped
   mapping(uint256 => mapping(uint256 => bool)) public suited;
 
-  /// @notice Maps alloy tokens to if they're brens (staked) or not
-  mapping(uint256 => bool) public brens;
+  /// @notice Maps alloy tokens to the kink they are bren
+  mapping(uint256 => address) public brens;
 
   /// :::::::::::::::::::::  CONSTRUCTOR  ::::::::::::::::::::: ///
 
@@ -94,20 +100,26 @@ contract Clerk {
   /// :::::::::::::::::::::::::  BREN  ::::::::::::::::::::::::: ///
 
   /// @notice Stakes the token in a given kink
-  function bren(uint256 id, address kink) public onlyAlloy {
-    // Validate that kink is stakeable
-    if (!Kink(kink).isBren()) revert NonBren();
+  function bren(uint256 id, address kink, address who) public onlyAlloy {
     // If the alloy is staked, we cannot bren
-    if (brens[id]) revert AlreadyBren();
-    brens[id] = true;
-    Kink(kink).bren(id);
+    if (brens[id] != address(0)) revert AlreadyBren();
+    brens[id] = kink;
+    Kink(kink).bren(who);
+  }
+
+  /// :::::::::::::::::::::::::  PLOY  ::::::::::::::::::::::::: ///
+
+  /// @notice Unstakes a token in the current kink bren
+  function ploy(uint256 id) public onlyAlloy {
+    if (brens[id] == address(0)) revert NotBren();
+    brens[id] = address(0);
   }
 
   /// ::::::::::::::::::::::::::  SUIT  ::::::::::::::::::::::: ///
 
   /// @notice Equips a kink onto a keep's alloy.
-  function suit(address kink, uint256 tokenid, bool suit) external onlyAlloy {
-    suited[tokenid][kinkcs[kink]] = suit;
+  function suit(address kink, uint256 tokenid, bool equipped) external onlyAlloy {
+    suited[tokenid][kinkcs[kink]] = equipped;
   }
 
   /// ::::::::::::::::::::::::::  PILE  ::::::::::::::::::::::: ///

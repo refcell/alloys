@@ -5,6 +5,7 @@ import {Alloy} from "../Alloy.sol";
 import {Clerk} from "../Clerk.sol";
 import {Kink} from "../Kink.sol";
 import {Ownable} from "../kinks/Ownable.sol";
+import {Staked} from "../kinks/Staked.sol";
 import {IEvolve} from "../interfaces/IEvolve.sol";
 import {DSTestPlus} from "./utils/DSTestPlus.sol";
 
@@ -41,7 +42,7 @@ contract AlloyTest is DSTestPlus {
     function testMetadata() public {
         assertEq(alloy.name(), "Alloy");
         assertEq(alloy.symbol(), "ALOY");
-        assertEq(alloy.MAXIMUM_TOKENS(), 100);
+        assertEq(alloy.MAXIMUM_TOKENS(), 1_000);
         assertEq(alloy.KEEP_REWARD(), 10_000);
     }
 
@@ -166,6 +167,89 @@ contract AlloyTest is DSTestPlus {
         alloy.reap();
         vm.stopPrank();
         assertEq(ownable.balanceOf(address(1337)), 400 * 10 ** ownable.decimals());
+
+        // Cast works!
+        console.log(unicode"✅ reap tests passed!");
+    }
+
+    function testBrenOwnable() public {
+        // Meld an ownable kink
+        Ownable ownable = new Ownable();
+        startHoax(address(1337), address(1337), type(uint256).max);
+        alloy.cast(address(1337));
+        alloy.meld(address(ownable));
+        vm.stopPrank();
+
+        // Jump to non-zero block timestamp to avoid triggering UnKicked Revert
+        vm.warp(1 days);
+
+        // First we have to kick the kink
+        ownable.kick(block.timestamp + 10 days);
+
+        // Then, let's bren our alloy token
+        startHoax(address(1337), address(1337), type(uint256).max);
+        alloy.bren(1, address(ownable));
+        vm.stopPrank();
+
+        // Jump to middle of the reaping period
+        vm.warp(5 days);
+
+        // Reap the kink
+        assertEq(ownable.balanceOf(address(1337)), 0);
+        startHoax(address(1337), address(1337), type(uint256).max);
+        alloy.reap();
+        vm.stopPrank();
+
+        // The keep should now have 100 kink units distributed them for 4 days
+        assertEq(ownable.balanceOf(address(1337)), 400 * 10 ** ownable.decimals());
+
+        // If the user reaps again, the kink shouldn't give them any more
+        startHoax(address(1337), address(1337), type(uint256).max);
+        alloy.reap();
+        vm.stopPrank();
+        assertEq(ownable.balanceOf(address(1337)), 400 * 10 ** ownable.decimals());
+
+        // Cast works!
+        console.log(unicode"✅ reap tests passed!");
+    }
+
+    function testBrenStaked() public {
+        // Meld a staked kink
+        Staked staked = new Staked();
+        startHoax(address(1337), address(1337), type(uint256).max);
+        alloy.cast(address(1337));
+        alloy.meld(address(staked));
+        vm.stopPrank();
+
+        // Jump to non-zero block timestamp to avoid triggering UnKicked Revert
+        vm.warp(1 days);
+
+        // First we have to kick the kink
+        staked.kick(block.timestamp + 10 days);
+
+        // Then, let's bren our alloy token
+        startHoax(address(1337), address(1337), type(uint256).max);
+        alloy.bren(1, address(staked));
+        vm.stopPrank();
+
+        // Jump to middle of the reaping period
+        vm.warp(5 days);
+
+        // Reap the kink
+        assertEq(staked.balanceOf(address(1337)), 0);
+        startHoax(address(1337), address(1337), type(uint256).max);
+        alloy.reap();
+        vm.stopPrank();
+
+        // The keep should now have 100 kink units distributed them for 4 days
+        uint256 collected = (5 days - 1 days) * staked.EMISSION_RATE();
+        assertEq(staked.balanceOf(address(1337)), collected);
+
+        // If the user reaps again, the kink shouldn't give them any more
+        startHoax(address(1337), address(1337), type(uint256).max);
+        alloy.reap();
+        vm.stopPrank();
+        assertEq(staked.balanceOf(address(1337)), collected);
 
         // Cast works!
         console.log(unicode"✅ reap tests passed!");

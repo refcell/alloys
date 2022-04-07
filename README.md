@@ -1,9 +1,10 @@
-<img align="right" width="150" height="150" top="100" src="./assets/readme.jpg">
+<img align="right" width="150" height="150" top="100" src="./assets/gear.png">
 
 # alloys  • [![tests](https://github.com/abigger87/alloys/actions/workflows/tests.yml/badge.svg)](https://github.com/abigger87/alloys/actions/workflows/tests.yml) [![lints](https://github.com/abigger87/alloys/actions/workflows/lints.yml/badge.svg)](https://github.com/abigger87/alloys/actions/workflows/lints.yml) ![GitHub](https://img.shields.io/github/license/abigger87/alloys) ![GitHub package.json version](https://img.shields.io/github/package-json/v/abigger87/alloys)
 
 
 Modularized, Cross-Domain Fungible ERC721 Kinks.
+
 
 ## Overview
 
