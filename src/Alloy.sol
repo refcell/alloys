@@ -65,7 +65,7 @@ contract Alloy is ERC721 {
     uint256 nId = nextId + 1; // sload
     _mint(_to, nId);
     nextId = nId; // sstore
-    EVOLVE.mint(msg.sender, KEEP_REWARD);
+    EVOLVE.transfer(msg.sender, KEEP_REWARD);
   }
 
   /// :::::::::::::::::::::::::  BREN  ::::::::::::::::::::::::: ///

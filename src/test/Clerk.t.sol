@@ -34,7 +34,9 @@ contract ClerkTest is DSTestPlus {
 
         // Hoax evolve to allow user to mint
         startHoax(EVOLVE_WARDEN, EVOLVE_WARDEN, type(uint256).max);
-        evolve.setMintable(address(alloy), 1000);
+        uint256 evolveMintables = alloy.KEEP_REWARD() * alloy.MAXIMUM_TOKENS();
+        evolve.setMintable(EVOLVE_WARDEN, evolveMintables);
+        evolve.mint(address(alloy), evolveMintables);
         vm.stopPrank();
     }
 
